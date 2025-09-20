@@ -1,0 +1,29 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21' # Используйте актуальную версию Go
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run tests
+        run: go test -v ./...
+
+      # Важный шаг для Go: проверка кодстайла и форматирования
+      - name: Check code format
+        run: |
+          test -z $(gofmt -l .)
