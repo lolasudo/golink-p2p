@@ -1,0 +1,25 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream grpc_servers {
+        server 127.0.0.1:8443;
+    }
+
+    server {
+        listen 9445 ssl http2;
+        
+        # Server TLS certificates
+        ssl_certificate certs/server.pem;
+        ssl_certificate_key certs/server-key.pem;
+        
+        # mTLS - client certificate verification
+        ssl_client_certificate certs/ca.pem;
+        ssl_verify_client on;
+
+        location / {
+            grpc_pass grpc://grpc_servers;
+        }
+    }
+}
