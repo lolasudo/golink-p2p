@@ -1,4 +1,4 @@
-
+// This is a simple P2P application
 package main
 
 import "fmt"

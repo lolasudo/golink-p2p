@@ -1,0 +1,2 @@
+cd service2  
+go mod tidy
