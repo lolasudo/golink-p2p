@@ -1,23 +1,54 @@
-# Убрали version (как и просит warning)
 services:
-  service1:
-    build: 
-      context: ./service1
-      dockerfile: Dockerfile
+  nginx:
+    image: golink-nginx  # Используем собранный образ
     ports:
-      - "8080:8080"
+      - "80:80"
     networks:
       - app-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  service1:
+    image: golink-service1  # Используем собранный образ
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
   service2:
-    build:
-      context: ./service2  
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+    image: golink-service2  # Используем собранный образ
     networks:
       - app-network
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
 networks:
   app-network:
-    driver: bridge
+    external: true  # Используем созданную ранее сеть
